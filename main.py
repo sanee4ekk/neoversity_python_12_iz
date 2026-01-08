@@ -7,30 +7,70 @@ class Field:
     def __str__(self):
         return str(self.value)
 
-class Name:
-    # реалізація класу
-    ...
+class Name(Field):
+    def __init__(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Name must be a non-empty string")
+        super().__init__(value)
 
-class Phone:
-    # реалізація класу
-    ...
+class Phone(Field):
+    def __init__(self, value):
+        if not (value.isdigit() and len(value) == 10):
+            raise ValueError("Phone number must be 10 characters long")
+        super().__init__(value)
 
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
 
-    # реалізація класу
+    def add_phone(self, phone_number):
+        phone = Phone(phone_number)
+        self.phones.append(phone)
+
+    def edit_phone(self, old_number, new_number):
+        old_p = Phone(old_number)
+        new_p = Phone(new_number)
+        for i, phone in enumerate(self.phones):
+            if phone.value == old_p.value:
+                self.phones[i] = new_p
+                return
+        raise ValueError("Old phone number not found")
+    
+    def remove_phone(self, phone_number):
+        num = Phone(phone_number)
+        for phone in self.phones:
+            if phone.value == num.value:
+                self.phones.remove(phone)
+                return
+        raise ValueError("Phone number not found")
+    
+    def find_phone(self, phone_number):
+        try:
+            num = Phone(phone_number)
+            for phone in self.phones:
+                if phone.value == num.value:
+                    return phone
+        except:
+            print("Invalid phone number")
+        return None
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
 
-class AddressBook:
-    # реалізація класу
-    ...
+class AddressBook(UserDict):
+    def add_record(self, record):
+        self.data[record.name.value] = record
+
+    def delete(self, name):
+        if name in self.data:
+            del self.data[name]
+
+    def find(self, name):
+        return self.data.get(name, None)
 
 if __name__ == "__main__":
-        # Створення нової адресної книги
+    # Створення нової адресної книги
     book = AddressBook()
 
     # Створення запису для John
